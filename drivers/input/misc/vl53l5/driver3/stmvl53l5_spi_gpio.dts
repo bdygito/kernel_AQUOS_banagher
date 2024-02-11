@@ -1,0 +1,36 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2835";
+
+    fragment@0 {
+        target = <&spidev0>;
+
+        __overlay__ {
+            status = "disabled";
+        };
+    };
+    fragment@1 {
+        target = <&spi0>;
+        __overlay__ {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            status = "okay";
+
+            stmvl53l5: stmvl53l5 {
+                compatible = "st,stmvl53l5";
+                spi-cpol;
+                spi-cpha;
+                reg = <0>;
+                spi-max-frequency = <1000000>;
+                status = "okay";
+                stm,interrupt = <&gpio 16 1>; /* This is only required if interrupt pin is unhandled on platform */
+                stm,pwren = <&gpio 12 1>; /* This is only required if power enable pin is unhandled on platform */
+                stm,lpn = <&gpio 19 1>; /* This is only required if LPN pin is unhandled on platform */
+                stm,comms_select = <&gpio 23 1>; /* This is only required if comms select pin is unhandled on platform */
+                stm,firmware_name = "stmvl53l5.bin";
+            };
+        };
+    };
+};

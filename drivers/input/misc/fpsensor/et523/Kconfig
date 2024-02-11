@@ -1,0 +1,37 @@
+#
+# Sensor  drivers configuration
+#
+
+menu "SENSORS_FPRINT_EGIS_ET523"
+
+config SENSORS_FPRINT_ET523_PLATFORM
+	bool "Egis fingerprint sensor ET523 platform support"
+	default n
+	help
+	  If you say yes here you get support for the platform of the egis fingerprint sensor.
+
+config SENSORS_FPRINT_SHARP_CUSTOMIZE
+	bool "fingerprint sensor enable sharp customize"
+	default n
+	help
+	  If you say yes here you can enable Sharp customize.
+
+config SENSORS_FPRINT_NAVI_INPUT
+	bool "fingerprint sensor enable navi input"
+	default n
+	help
+	  If you say yes here you can enable navi input.
+
+config SENSORS_FPRINT_ET523_MODULE
+    tristate "fingerprint sensor enable loadable kernel module ET523"
+    default n
+    help
+      If you say yes here you can enable loadable kernel module.
+
+config SENSORS_FPRINT_LDO_CTRL
+    bool "fingerprint sensor enable power control for external LDO"
+    default n
+    help
+      If you say yes here you can enable power control for external LDO.
+
+endmenu

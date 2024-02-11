@@ -1,0 +1,28 @@
+#
+# SHARP configuration
+#
+
+menu "SHARP Device Drivers for Qualcomm SOC"
+
+comment "SHARP Device Drivers for Qualcomm SOC"
+
+source "drivers/soc/qcom/sharp/shtimer/Kconfig"
+
+source "drivers/soc/qcom/sharp/Kconfig.shrlog"
+
+source "drivers/soc/qcom/sharp/shboot/Kconfig"
+
+source "drivers/soc/qcom/sharp/pnp/Kconfig"
+
+endmenu
+
+menu "SHARP SHDIAG SMEM driver"
+
+comment "SHARP SHDIAG SMEM driver"
+
+config SHARP_SHDIAG_SMD
+       tristate "SHARP SHDIAG SMEM DRIVER"
+       depends on SHARP_SMEM_CUST
+       default n
+endmenu
+

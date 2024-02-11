@@ -1,0 +1,38 @@
+#
+# SensorHub drivers configuration
+#
+
+menu "SHARP ML630Q790 devices"
+
+config SHUB_ML630Q790
+	bool "LAPIS Semicomductor ML610Q790 SensorHub Micom for all"
+	default y
+	help
+	 --- help ---
+	 If you say yes here you get support for SHUB_ML630Q790.
+
+config SHUB_ML630Q790_Banagher
+	bool "LAPIS Semicomductor ML610Q790 SensorHub Micom for SM8250"
+	depends on SHUB_ML630Q790
+	default n
+	help
+	 --- help ---
+	 If you say yes here you get support for SHUB_ML630Q790.
+
+config SHUB_ML630Q790_Sarah
+	bool "LAPIS Semicomductor ML610Q790 SensorHub Micom for SM6350"
+	depends on SHUB_ML630Q790
+	default n
+	help
+	 --- help ---
+	 If you say yes here you get support for SHUB_ML630Q790.
+
+config SHUB_ML630Q790_Recoa
+	bool "LAPIS Semicomductor ML610Q790 SensorHub Micom for SM7225"
+	depends on SHUB_ML630Q790
+	default n
+	help
+	 --- help ---
+	 If you say yes here you get support for SHUB_ML630Q790.
+
+endmenu

@@ -1,0 +1,25 @@
+#
+# Sharp Touchscreen configuration
+#
+
+menu "SHARP TPS driver"
+
+comment "SHARP Touchscreen device drivers"
+
+config TOUCHSCREEN_SHARP_TPS
+	bool "SHARP Touchscreens"
+	default n
+
+if TOUCHSCREEN_SHARP_TPS
+	source "drivers/input/touchscreen/shtps/sy3000/Kconfig"
+
+	config SHARP_TPS_FOCALTECH_DEV
+		tristate "Focaltech Device"
+		default n
+		depends on TOUCHSCREEN_SHARP_TPS
+
+	source "drivers/input/touchscreen/shtps/focaltech/Kconfig"
+	source "drivers/input/touchscreen/shtps/focaltech_ft3519/Kconfig"
+
+endif # TOUCHSCREEN_SHARP_TPS
+endmenu

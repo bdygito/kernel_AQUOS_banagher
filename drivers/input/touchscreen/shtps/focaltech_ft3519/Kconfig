@@ -1,0 +1,12 @@
+#
+# Sharp Touchscreen configuration
+#
+
+if SHARP_TPS_FOCALTECH_DEV
+
+	config SHARP_TPS_FOCALTECH_FT3519
+		tristate "FOCALTECH FT3519"
+		default n
+		depends on SHARP_TPS_FOCALTECH_DEV
+
+endif # SHARP_TPS_FOCALTECH_DEV

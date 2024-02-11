@@ -1,0 +1,37 @@
+#
+# fp_sensor driver configuration
+#
+
+menu "SENSORS_FPRINT_EGIS_ET702"
+
+config SENSORS_FPRINT_ET702_MODULE
+	tristate "fingerprint sensor enable loadable kernel module ET702"
+	default n
+	help
+	  If you say yes here you can enable loadable kernel module.
+
+config SENSORS_FPRINT_ET702_PLATFORM
+	bool "Egis fingerprint sensor ET702 platform support"
+	default n
+	help
+	  If you say yes here you get support for the platform of the egis fingerprint sensor.
+
+config SENSORS_FPRINT_SHARP_CUSTOMIZE
+	bool "fingerprint sensor enable sharp customize"
+	default n
+	help
+	  If you say yes here you can enable Sharp customize.
+
+config SENSORS_FPRINT_SHARP_PRE_EVT
+	bool "Correspondence required for PreEVT of fingerprint sensor"
+	default n
+	help
+	  If you say yes here you can enable Sharp customize for PreEVT.
+
+config SENSORS_FPRINT_SHARP_EGIS_NAVIGATION_SUPPORT
+	bool "Egis fingerprint navigation support"
+	default n
+	help
+	  If you say yes here you can enable Egis navigation.
+
+endmenu

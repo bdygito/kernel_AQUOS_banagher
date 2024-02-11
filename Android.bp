@@ -1,0 +1,80 @@
+cc_binary_host {
+    name: "unifdef",
+    srcs: ["scripts/unifdef.c"],
+    sanitize: {
+        never: true,
+    },
+}
+
+cc_binary_host {
+    name: "unifdefex",
+    srcs: ["scripts/unifdef.c"],
+    sanitize: {
+        never: true,
+    }
+}
+
+genrule {
+    name: "gen-headers_install.sh",
+    srcs: ["scripts/headers_install.sh"],
+    tools: ["unifdef"],
+    out: ["headers_install.sh"],
+    cmd: "sed 's+scripts/unifdef+$(location unifdef)+g' $(in) > $(out)",
+}
+
+cc_prebuilt_binary {
+    name: "headers_install.sh",
+    device_supported: false,
+    host_supported: true,
+    srcs: [":gen-headers_install.sh"],
+}
+
+// Use the following for verbose output from kernel_headers.py.
+// kernel_headers_verbose = "--verbose "
+// Use the following for minimal output from kernel_headers.py.
+kernel_headers_verbose = ""
+
+build = ["gen_headers_arm.bp", "gen_headers_arm64.bp"]
+
+cc_library_headers {
+    name: "qti_kernel_headers",
+    arch: {
+        arm: {
+            generated_headers: ["qti_generate_kernel_headers_arm"],
+            export_generated_headers: ["qti_generate_kernel_headers_arm"],
+        },
+        arm64: {
+            generated_headers: ["qti_generate_kernel_headers_arm64"],
+            export_generated_headers: ["qti_generate_kernel_headers_arm64"],
+        },
+    },
+    vendor: true,
+    recovery_available: true,
+}
+
+gensrcs {
+    name: "shterm-kernel-includes",
+
+    // move to out/ as root for header generation because of scripts/unifdef
+    // storage - at the expense of extra ../ references
+    cmd: "pushd out && mkdir -p scripts && rm -f scripts/unifdefex && ln -s ../../$(location unifdefex) scripts/unifdefex && ../$(location scripts/headers_install_ex.sh) `dirname ../$(out)` ../ $(in) && popd",
+
+    tools: ["unifdefex"],
+    tool_files: ["scripts/headers_install_ex.sh"],
+    export_include_dirs: ["include/uapi"],
+    srcs: ["include/uapi/misc/shterm.h"],
+    output_extension: "h",
+}
+
+cc_library_headers {
+    name: "shterm-kernel-headers",
+    vendor: true,
+    generated_headers: ["shterm-kernel-includes"],
+    export_generated_headers: ["shterm-kernel-includes"],
+}
+
+cc_library_headers {
+    name: "shterm-kernel-headers-for-system",
+    generated_headers: ["shterm-kernel-includes"],
+    export_generated_headers: ["shterm-kernel-includes"],
+}

@@ -1,0 +1,12 @@
+#
+# STMicroelectronics touchscreen driver configuration
+#
+
+config TOUCHSCREEN_ST
+      bool "STMicroelectronics Touchscreen Driver"
+      default n
+      depends on I2C
+      help
+        Say Y here if you have a STMicroelectronics Touchscreen.
+        If unsure, say N.
+

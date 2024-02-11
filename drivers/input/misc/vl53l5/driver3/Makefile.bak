@@ -1,0 +1,149 @@
+################################################################################
+# Copyright (c) 2020, STMicroelectronics - All Rights Reserved
+#
+# This file is part of VL53L5 Kernel Driver and is dual licensed,
+# either 'STMicroelectronics Proprietary license'
+# or 'BSD 3-clause "New" or "Revised" License' , at your option.
+#
+################################################################################
+#
+# 'STMicroelectronics Proprietary license'
+#
+################################################################################
+#
+# License terms: STMicroelectronics Proprietary in accordance with licensing
+# terms at www.st.com/sla0081
+#
+# STMicroelectronics confidential
+# Reproduction and Communication of this document is strictly prohibited unless
+# specifically authorized in writing by STMicroelectronics.
+#
+#
+################################################################################
+#
+# Alternatively, VL53L5 Kernel Driver may be distributed under the terms of
+# 'BSD 3-clause "New" or "Revised" License', in which case the following
+# provisions apply instead of the ones mentioned above :
+#
+################################################################################
+#
+# License terms: BSD 3-clause "New" or "Revised" License.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+# may be used to endorse or promote products derived from this software
+# without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#
+###############################################################################/
+
+# Parameters
+# Configure the build type : RELEASE, DEBUG
+BUILD_TYPE = RELEASE
+
+# Set to TRUE to enable logging functions.
+LOG_ENABLE = FALSE
+GPIO_ENABLED = TRUE
+
+KDIR = /lib/modules/$(shell uname -r)/build
+
+ccflags-y += -I$(src)/.
+ccflags-y += -Wall -Werror -Wno-missing-braces
+
+KERNEL_DRIVER_OBJS = 	./stmvl53l5_module.o \
+			./stmvl53l5_load_firmware.o \
+			./stmvl53l5_platform.o \
+			./stmvl53l5_power.o \
+			./stmvl53l5_register_utils.o
+
+MODULE := stmvl53l5
+CONFIG_STMVL53L5_SENSOR := m
+
+ifeq "$(GPIO_ENABLED)" "TRUE"
+  $(warning GPIO_ENABLED=$(GPIO_ENABLED))
+  ccflags-y += -DSTM_VL53L5_GPIO_ENABLE
+endif
+
+ifeq "$(BUILD_TYPE)" "DEBUG"
+  $(warning BUILD_TYPE=$(BUILD_TYPE))
+  ccflags-y += -DDEBUG
+endif
+
+ifeq "$(BUILD_TYPE)" "RELEASE"
+  $(warning BUILD_TYPE=$(BUILD_TYPE))
+endif
+
+obj-$(CONFIG_STMVL53L5_SENSOR)	+= $(MODULE).o
+
+# # Kernel level objects
+$(MODULE)-objs += 	$(KERNEL_DRIVER_OBJS)
+
+all:
+	make -C $(KDIR) M=$(PWD) modules
+
+clean:
+	make -C $(KDIR) M=$(PWD) clean
+
+# Insert the module using insmod with the configured module parameters
+insert:
+	sudo insmod $(MODULE).ko
+
+dtb_i2c:
+	sudo rm -f /boot/overlays/stmvl53l5.dtb
+	dtc -I dts -O dtb -o stmvl53l5_i2c.dtb stmvl53l5_i2c.dts
+	sudo cp stmvl53l5_i2c.dtb /boot/overlays/stmvl53l5.dtb
+
+dtb_spi:
+	sudo rm -f /boot/overlays/stmvl53l5.dtb
+	dtc -I dts -O dtb -o stmvl53l5_spi.dtb stmvl53l5_spi.dts
+	sudo cp stmvl53l5_spi.dtb /boot/overlays/stmvl53l5.dtb
+
+dtb_spi_gpio:
+	sudo rm -f /boot/overlays/stmvl53l5.dtb
+	dtc -I dts -O dtb -o stmvl53l5_spi_gpio.dtb stmvl53l5_spi_gpio.dts
+	sudo cp stmvl53l5_spi_gpio.dtb /boot/overlays/stmvl53l5.dtb
+
+dtb_i2c_gpio:
+	sudo rm -f /boot/overlays/stmvl53l5.dtb
+	dtc -I dts -O dtb -o stmvl53l5_i2c_gpio.dtb stmvl53l5_i2c_gpio.dts
+	sudo cp stmvl53l5_i2c_gpio.dtb /boot/overlays/stmvl53l5.dtb
+
+clean_dtb:
+	sudo rm $(MODULE).dtb
+	sudo rm /boot/overlays/$(MODULE).dtb
+# Remove the module using rmmod
+remove:
+	-sudo rmmod $(MODULE)
+# remove gpio's from user space, required for module
+setup:
+	-sudo echo 16 > /sys/class/gpio/unexport
+	-sudo echo 7 > /sys/class/gpio/unexport
+	-sudo echo 8 > /sys/class/gpio/unexport
+# return gpio's to user space, required for module
+reset:
+	-sudo echo 16 > /sys/class/gpio/export
+	-sudo echo 7 > /sys/class/gpio/export
+	-sudo echo 8 > /sys/class/gpio/export
