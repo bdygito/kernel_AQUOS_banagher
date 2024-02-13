@@ -111,7 +111,7 @@ FEATURE_USE_CCI := true
 
 # Parameters
 # Configure the build type : RELEASE, DEBUG
-BUILD_TYPE = DEBUG
+BUILD_TYPE = RELEASE
 
 # Set to TRUE to enable logging functions.
 LOG_ENABLE = FALSE
